@@ -1,6 +1,9 @@
 name: Screenshots
 on:
-#   pull_request:
+  pull_request:
+  # TODO_PCJ: Remove this condition to reactivate CI
+    branches:
+      - workflow-disabled
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
