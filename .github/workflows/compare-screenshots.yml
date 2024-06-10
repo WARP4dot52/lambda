@@ -38,6 +38,27 @@ jobs:
       # - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f solver
       - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f statistics
       # - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f toolbox
+      # TODO_PCJ: restore grapher filter
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_autozoom_6
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_autozoom_2
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_autozoom_9
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_autozoom_forced_x_range
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_autozoom_trig_intersections
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_curve_parameters_cartesian
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_edition
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_exact_results_symbolic_undefined
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_display_derivative_banner
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_graph_area_cell
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_derivatives_color
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_labels_no_overlap
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_no_data
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_max_pan
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_polar_grid
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_polar_in_varbox
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_set_domain
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_values_delete_function
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_values_function_column_options
+      - run: python3 build/screenshots/compare_crc.py output/release/simulator/linux/epsilon.bin -f grapher_values_preface_column_1
       - name: Upload output
         if: failure()
         uses: actions/upload-artifact@v3
