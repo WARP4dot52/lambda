@@ -9,7 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# TODO: variable for coverage output directory
 jobs:
   coverage-base:
     runs-on: ${{ endswith(github.repository, '/epsilon-internal') && 'self-hosted' || 'ubuntu-latest' }}
@@ -19,22 +18,43 @@ jobs:
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           submodules: ${{ secrets.PAT != null }}
-          ref:  ${{ github.event.pull_request.head.sha }} # TODO: common ancestor?
+          ref:  ${{ github.event.pull_request.base.sha }} # TODO: common ancestor?
       - name: Install dependencies
         run: build/setup.sh --only-simulator
       - name: Build coverage target
         run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=1 coverage
-      - name: Shorten base commit
-        id: base_commit
-        run: echo "base_sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha}} )" >> $GITHUB_OUTPUT
+      - name: Rename base.info
+        run: mv output/debug/linux/coverage/code_coverage.info output/debug/linux/coverage/base.info
       - name: Upload BASE coverage
         uses: actions/upload-artifact@v4
         with:
           name: base.info
-          path: output/debug/linux/coverage/code_coverage.info
+          path: output/debug/linux/coverage/base.info
           retention-days: 7
   coverage-head:
-    needs: coverage-base
+    runs-on: ${{ endswith(github.repository, '/epsilon-internal') && 'self-hosted' || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          submodules: ${{ secrets.PAT != null }}
+          ref:  ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        run: build/setup.sh --only-simulator
+      - name: Build coverage target
+        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=1 coverage
+      - name: Rename head.info
+        run: mv output/debug/linux/coverage/code_coverage.info output/debug/linux/coverage/head.info
+      - name: Upload HEAD coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: head.info
+          path: output/debug/linux/coverage/head.info
+          retention-days: 7
+  # TODO: in a separate workflow for safety reasons
+  report-diff:
+    needs: [coverage-base, coverage-head]
     runs-on: ${{ endswith(github.repository, '/epsilon-internal') && 'self-hosted' || 'ubuntu-latest' }}
     steps:
       - name: Checkout current branch
@@ -46,20 +66,20 @@ jobs:
           fetch-depth: 0
       - name: Install dependencies
         run: build/setup.sh --only-simulator
-      - name: Build coverage target
-        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=1 coverage
-      - name: Rename head.info
-        run: mv output/debug/linux/coverage/code_coverage.info output/debug/linux/coverage/head.info
       - name: Download base info
         uses: actions/download-artifact@v4
         with:
           name: base.info
           path: output/debug/linux/coverage
+      - name: Download head info
+        uses: actions/download-artifact@v4
+        with:
+          name: head.info
+          path: output/debug/linux/coverage
       - name: Generate diff file
         run: /usr/share/lcov/support-scripts/gitdiff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > diff.txt
       - name: Generate coverage report
-        run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff output/debug/linux/coverage/diff.txt
-      # TODO: grep summary at the end of genhtml output?
+        run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > genhtml_output.txt
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
@@ -76,9 +96,9 @@ jobs:
         run: echo "head_sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }} )" >> $GITHUB_OUTPUT
       - name: Shorten base commit
         id: base_commit
-        run: echo "base_sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }} )" >> $GITHUB_OUTPUT
+        run: echo "base_sha=$(git rev-parse --short ${{ github.event.pull_request.base.sha }} )" >> $GITHUB_OUTPUT
       - name: Add comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
