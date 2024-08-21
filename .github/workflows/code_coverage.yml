@@ -79,18 +79,12 @@ jobs:
       - name: Generate diff file
         run: /usr/share/lcov/support-scripts/gitdiff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > diff.txt
       - name: Generate coverage report
-        run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > genhtml_output.txt
+        run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > report_summary.txt
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: coverage_report
           path: report
-      - name: Head coverage summary
-        id: head_summary
-        run: lcov --summary output/debug/linux/coverage/head.info >> output/debug/linux/coverage/head_summary.txt
-      - name: Base coverage summary
-        id: base_summary
-        run: lcov --summary output/debug/linux/coverage/base.info >> output/debug/linux/coverage/base_summary.txt
       - name: Shorten HEAD commit
         id: head_commit
         run: echo "head_sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }} )" >> $GITHUB_OUTPUT
@@ -103,13 +97,12 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             var fs = require('fs');
-            var head_coverage_summary = fs.readFileSync('output/debug/linux/coverage/head_summary.txt');
-            var base_coverage_summary = fs.readFileSync('output/debug/linux/coverage/base_summary.txt');
+            var report_summary = fs.readFileSync('report_summary.txt');
             var head_commit = "${{ steps.head_commit.outputs.head_sha }}";
             var base_commit = "${{ steps.base_commit.outputs.base_sha }}";
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "### Coverage report \n\n#### HEAD (" + head_commit + ")\n" + head_coverage_summary + "\n\n#### BASE (" + base_commit + ")\n" + base_coverage_summary
+              body: "### Coverage report (" + head_commit + ")\n\n" + report_summary
             });
