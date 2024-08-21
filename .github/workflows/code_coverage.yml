@@ -81,6 +81,7 @@ jobs:
       - name: Generate coverage report
         run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > report_summary.txt
       - name: Upload report
+        id: report
         uses: actions/upload-artifact@v4
         with:
           name: coverage_report
@@ -100,9 +101,10 @@ jobs:
             var report_summary = fs.readFileSync('report_summary.txt');
             var head_commit = "${{ steps.head_commit.outputs.head_sha }}";
             var base_commit = "${{ steps.base_commit.outputs.base_sha }}";
+            var artifact_url = "${{ github.repositoryUrl }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.report.outputs.artifact-id }}"
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "### Coverage report (" + head_commit + ")\n\n" + report_summary
+              body: "### Coverage report (" + head_commit + ")\n\n" + "Download full report: " + artifact_url
             });
