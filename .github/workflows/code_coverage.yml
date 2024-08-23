@@ -22,14 +22,14 @@ jobs:
       - name: Install dependencies
         run: build/setup.sh --only-simulator
       - name: Build coverage target
-        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage
+        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=0 ASSERTIONS=1 coverage
       - name: Rename base.info
-        run: mv output/debug/linux/coverage/code_coverage.info output/debug/linux/coverage/base.info
+        run: mv output/release/linux/coverage/code_coverage.info output/release/linux/coverage/base.info
       - name: Upload BASE coverage
         uses: actions/upload-artifact@v4
         with:
           name: base.info
-          path: output/debug/linux/coverage/base.info
+          path: output/release/linux/coverage/base.info
           retention-days: 7
   coverage-head:
     runs-on: ${{ endswith(github.repository, '/epsilon-internal') && 'self-hosted' || 'ubuntu-latest' }}
@@ -43,14 +43,14 @@ jobs:
       - name: Install dependencies
         run: build/setup.sh --only-simulator
       - name: Build coverage target
-        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage
+        run: make -j32 TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=0 ASSERTIONS=1 coverage
       - name: Rename head.info
-        run: mv output/debug/linux/coverage/code_coverage.info output/debug/linux/coverage/head.info
+        run: mv output/release/linux/coverage/code_coverage.info output/release/linux/coverage/head.info
       - name: Upload HEAD coverage
         uses: actions/upload-artifact@v4
         with:
           name: head.info
-          path: output/debug/linux/coverage/head.info
+          path: output/release/linux/coverage/head.info
           retention-days: 7
   report-diff:
     needs: [coverage-base, coverage-head]
@@ -69,16 +69,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: base.info
-          path: output/debug/linux/coverage
+          path: output/release/linux/coverage
       - name: Download head info
         uses: actions/download-artifact@v4
         with:
           name: head.info
-          path: output/debug/linux/coverage
+          path: output/release/linux/coverage
       - name: Generate diff file
         run: /usr/share/lcov/support-scripts/gitdiff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > diff.txt
       - name: Generate coverage report
-        run: genhtml output/debug/linux/coverage/head.info -o report --baseline-file output/debug/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > genhtml_output.txt
+        run: genhtml output/release/linux/coverage/head.info -o report --baseline-file output/release/linux/coverage/base.info --diff diff.txt | grep "coverage rate:" -A 40 > genhtml_output.txt
       - name: Upload report
         id: report
         uses: actions/upload-artifact@v4
