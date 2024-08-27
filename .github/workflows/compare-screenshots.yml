@@ -20,9 +20,10 @@ jobs:
           submodules: ${{ secrets.PAT != null }}
       - uses: numworks/setup-llvm@latest
       - run: echo "LD_LIBRARY_PATH=$LLVM_PATH/lib/x86_64-unknown-linux-gnu/" >> $GITHUB_ENV
+      - run: echo "CCACHE_DIR=/home/usain/_work/ccache" >> $GITHUB_ENV
       - run: build/setup.sh --only-simulator
       - name: Build PR head
-        run: make -j32 TOOLCHAIN=host-clang PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin
+        run: make -j32 CCACHE=1 TOOLCHAIN=host-clang PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin
       # - name: Compare screenshot images
       - run: python3 build/screenshots/compare_crc.py -d tests/screenshots_dataset_cas output/release/linux/epsilon.cas.bin
       - run: python3 build/screenshots/compare_crc.py output/release/linux/epsilon.bin
