@@ -8,7 +8,7 @@ on:
 
 env:
   MAKEFLAGS: ${{ (github.repository == 'numworks/epsilon-internal') && '-j32 CCACHE=1' || '-j2' }}
-  CCACHE_DIR: ${{ (github.repository == 'numworks/epsilon-internal') && '/home/usain/_work/ccache' || '' }}
+  CCACHE_DIR: ${{ (github.repository == 'numworks/epsilon-internal') && '/home/usain/_work/ccache_docker' || '' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,14 +23,13 @@ jobs:
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           submodules: ${{ secrets.PAT != null }}
-      - uses: numworks/setup-llvm@latest
-      - run: echo "LD_LIBRARY_PATH=$LLVM_PATH/lib/x86_64-unknown-linux-gnu/" >> $GITHUB_ENV
-      - run: build/setup.sh --only-simulator
+      - name: Build container and define DOCKER_RUN
+        uses: ./.github/actions/docker-builder
       - name: Build PR head
-        run: make TOOLCHAIN=host-clang PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin
+        run: $DOCKER_RUN "make PYTHON=\$PYTHON PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin"
       - name: Compare crc of screenshots (No CAS)
         timeout-minutes: 15
-        run: python3 build/screenshots/compare_crc.py output/debug/optimized/linux/epsilon.bin -n
+        run: $DOCKER_RUN "\$PYTHON build/screenshots/compare_crc.py output/debug/optimized/linux/epsilon.bin -n"
       - name: Compare crc of screenshots (CAS)
         timeout-minutes: 15
-        run: python3 build/screenshots/compare_crc.py -d tests/screenshots_dataset_cas output/debug/optimized/linux/epsilon.cas.bin -n
+        run: $DOCKER_RUN "\$PYTHON build/screenshots/compare_crc.py -d tests/screenshots_dataset_cas output/debug/optimized/linux/epsilon.cas.bin -n"
