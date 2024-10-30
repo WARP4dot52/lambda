@@ -62,7 +62,7 @@ jobs:
           ref:  ${{ github.event.pull_request.head.sha }}
       - name: Build HEAD coverage target
         timeout-minutes: 15
-        run: $DOCKER_RUN "make PYTHON=\$PYTHON PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage"
+        run: $DOCKER_RUN "make PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage"
       - name: Rename head.info
         run: mv ${{ env.COVERAGE_OUTPUT_DIR }}/code_coverage.info ${{ env.COVERAGE_OUTPUT_DIR }}/head.info
       - name: Upload HEAD coverage

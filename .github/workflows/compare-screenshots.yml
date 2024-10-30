@@ -26,7 +26,7 @@ jobs:
       - name: Build container and define DOCKER_RUN
         uses: ./.github/actions/docker-builder
       - name: Build PR head
-        run: $DOCKER_RUN "make PYTHON=\$PYTHON PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin"
+        run: $DOCKER_RUN "make PLATFORM=simulator ASSERTIONS=1 epsilon.bin epsilon.cas.bin"
       - name: Compare crc of screenshots (No CAS)
         timeout-minutes: 15
         run: $DOCKER_RUN "\$PYTHON build/screenshots/compare_crc.py output/debug/optimized/linux/epsilon.bin -n"
