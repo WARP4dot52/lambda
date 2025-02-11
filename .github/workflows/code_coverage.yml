@@ -100,7 +100,7 @@ jobs:
       # TODO: next steps should be in a separate workflow for safety reasons
       - name: Format report into markdown tables
         run: |
-          .venv/bin/python3 build/metrics/coverage_report.py genhtml_output.txt --summary > summary.md
+          .venv/bin/python3 build/metrics/coverage_report.py genhtml_output.txt --base_output base_summary.txt --summary > summary.md
           .venv/bin/python3 build/metrics/coverage_report.py genhtml_output.txt --diff > differential.md
       - name: Shorten commit ids
         id: shorten_commits
