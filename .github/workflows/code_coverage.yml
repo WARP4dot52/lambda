@@ -35,7 +35,7 @@ jobs:
         run: build/setup.sh --only-simulator
       - name: Build BASE coverage target
         timeout-minutes: 15
-        run: make TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage
+        run: make TOOLCHAIN=host-gcc PLATFORM=simulator DEBUG=1 ASSERTIONS=0 coverage | grep "coverage rate:" -A 4 > base_summary.txt
       - name: Rename base.info
         run: mv output/debug/no_assert/linux/coverage/code_coverage.info output/debug/no_assert/linux/coverage/base.info
       - name: Upload BASE coverage
@@ -43,6 +43,12 @@ jobs:
         with:
           name: base.info
           path: output/debug/no_assert/linux/coverage/base.info
+          retention-days: 2
+      - name: Upload BASE coverage summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: base_summary.txt
+          path: base_summary.txt
           retention-days: 2
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -68,6 +74,11 @@ jobs:
         with:
           name: base.info
           path: output/debug/no_assert/linux/coverage
+      - name: Download BASE coverage summary
+        uses: actions/download-artifact@v4
+        with:
+          name: base_summary.txt
+          path: base_summary.txt
       - name: Generate diff file
         run: /usr/local/share/lcov/support-scripts/gitdiff ${{ steps.common_ancestor.outputs.commit_sha }} ${{ github.event.pull_request.head.sha }} > diff.txt
       - name: Upload diff file # useful for debug
