@@ -34,8 +34,6 @@ jobs:
       - name: Checkout to most recent ancestor
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          submodules: ${{ secrets.PAT != null }}
           ref:  ${{ steps.common_ancestor.outputs.commit_sha }}
       - name: Create coverage output directory
         run: mkdir -p ${{ env.COVERAGE_OUTPUT_DIR }}
@@ -59,8 +57,6 @@ jobs:
       - name: Checkout current branch
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          submodules: ${{ secrets.PAT != null }}
           ref:  ${{ github.event.pull_request.head.sha }}
       - name: Build HEAD coverage target
         timeout-minutes: 15

@@ -22,9 +22,6 @@ jobs:
     steps:
       - name: Checkout PR's merged head
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          submodules: ${{ secrets.PAT != null }}
       - name: Build container and define DOCKER_RUN
         uses: ./.github/actions/docker-builder
       - name: Build PR head
