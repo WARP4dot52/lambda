@@ -5,7 +5,7 @@ on:
       - '**/*.md'
       - 'poincare/doc/**'
       - 'ion/src/device/**'
-      - 'scandium'
+      - '**/scandium/**'
       - 'external_apps/**'
 
 env:
