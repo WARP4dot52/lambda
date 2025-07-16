@@ -668,6 +668,13 @@ Tree* EquationSolver::SolvePolynomial(const Tree* simplifiedEquationSet,
    * without approximation. */
   polynomial->removeTree();
 
+  // The quadratic / cubic solver may have failed to find exact solutions
+  if (solutionList->isUndefined()) {
+    SharedTreeStack->dropBlocksFrom(equation);
+    *error = Error::RequireApproximateSolution;
+    return nullptr;
+  }
+
   // Enhance solutions and make sure they satisfy dependencies in the equation
   assert(solutionList->isList());
   size_t numberOfSolutions = solutionList->numberOfChildren();
