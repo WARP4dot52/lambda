@@ -494,8 +494,10 @@ Tree* EquationSolver::SolveLinearSystem(const Tree* reducedEquationSet,
         /* Replace the solution in the equation set to check later that it
          * respects the dependencies. */
         Variables::Replace(equationSetClone, row, child);
-        // Child has already been reduced.
+        /* Child has already been reduced systematically, but we also need an
+         * advanced reduction. */
         assert(!Simplification::ReduceSystem(child, false));
+        Simplification::ReduceSystem(child, true);
         // Continue anyway to preserve TreeStack integrity
         child = child->nextTree();
       } else {
