@@ -87,8 +87,8 @@ install_macos_binary_deps() {
 }
 
 install_linux_binary_deps() {
-  sudo apt-get update && sudo apt-get upgrade
-  sudo apt-get install \
+  sudo apt-get update -y && sudo apt-get upgrade -y
+  sudo apt-get install -y \
     build-essential \
     ccache \
     clang-format \
@@ -105,11 +105,11 @@ install_linux_binary_deps() {
     python3-venv
 
   if [[ "${INSTALL_ARM_GCC-0}" == "1" ]]; then
-    sudo apt-get install gcc-arm-none-eabi binutils-arm-none-eabi
+    sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
   fi
 
   if [[ $CI == "1" ]]; then
-    sudo apt-get install parallel
+    sudo apt-get install -y parallel
     install_latest_lcov
   fi
 }
