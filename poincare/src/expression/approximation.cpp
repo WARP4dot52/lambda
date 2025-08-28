@@ -881,6 +881,7 @@ std::complex<T> ListToComplex(const Tree* e, const Context* ctx) {
           TreeStackCheckpoint::Raise(exc);
         }
       }
+      assert(sortedList);
       list->moveTreeOverTree(sortedList);
       std::complex<T> result = PrivateToComplex<T>(list, ctx);
       list->removeTree();
@@ -990,6 +991,7 @@ std::complex<T> MiscToComplex(const Tree* e, const Context* ctx) {
 
 template <typename T>
 std::complex<T> ToComplexSwitchOnlyReal(const Tree* e, const Context* ctx) {
+  assert(e->numberOfChildren() <= 2);
   T child[2];
   for (IndexedChild<const Tree*> childNode : e->indexedChildren()) {
     std::complex<T> app = PrivateToComplex<T>(childNode, ctx);

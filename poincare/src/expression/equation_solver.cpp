@@ -772,6 +772,7 @@ Tree* EquationSolver::getNextParameterSymbol(size_t* parameterIndex,
     parameterName[parameterNameLength] = 0;
     Tree* symbol =
         SharedTreeStack->pushUserSymbol(parameterName, parameterNameLength + 1);
+    assert(context);
     if (!context->expressionForUserNamed(symbol)) {
       return symbol;
     }
