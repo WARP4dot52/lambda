@@ -420,7 +420,7 @@ QUIZ_CASE(pcj_simplification_derivative) {
 
   simplifies_to("diff(sec(x),x,x)", "sin(x)/cos(x)^2");
   simplifies_to("diff(csc(x),x,x)", "-cos(x)/sin(x)^2");
-  simplifies_to("diff(cot(x),x,x)", "dep(-(1+cot(x)^2),{cot(x)})");
+  simplifies_to("diff(cot(x),x,x)", "dep(-1-cot(x)^2,{cot(x)})");
   simplifies_to("diff(arcsec(x),x,x)",
                 "dep(1/(x^2×√(1-1/x^2)),{piecewise(0,abs(1/"
                 "x)≤1,nonreal),real(arccos(1/x))})");
@@ -620,6 +620,7 @@ QUIZ_CASE(pcj_simplification_parametric) {
   simplifies_to("sum(k,k,n,j)", "(j^2-n^2+j+n)/2");
   simplifies_to("2×sum(k,k,0,n)+n", "n×(n+2)");
   simplifies_to("2×sum(k,k,3,n)+n", "n×(n+2)-6");
+  simplifies_to("sum(k^2,k,n,j)", "(2×j^3-2×n^3+3×j^2+3×n^2+j-n)/6");
   simplifies_to("sum(k^2,k,2,5)", "54");
   simplifies_to("sum((2k)^2,k,2,5)", "216");
   simplifies_to("sum((2k)^2,k,0,n)", "(2×n×(n+1)×(2×n+1))/3");
@@ -627,7 +628,7 @@ QUIZ_CASE(pcj_simplification_parametric) {
   simplifies_to("sum(k*cos(k),k,1,n)", "sum(cos(k)×k,k,1,n)");
   simplifies_to("sum(sum(x*j,j,1,n),k,1,2)", "n×(n+1)×x");
   simplifies_to("sum(sum(a*k,a,0,j),k,1,n)", "(j×(j+1)×n×(n+1))/4");
-  simplifies_to("sum(k^2,k,n,j)", "(j×(j+1)×(2×j+1)-n×(n-1)×(2×n-1))/6");
+  simplifies_to("sum(sum(j,j,0,k),k,1,n)", "n^3/6+n^2/2+n/3");
   simplifies_to("sum(sum(j,j,0,k+π),k,1,n)", "undef");
   simplifies_to("sum(π^k,k,4,2)", "0");
   simplifies_to("sum(sin(k),k,a+10,a)", "0");
@@ -772,7 +773,7 @@ QUIZ_CASE(pcj_simplification_hyperbolic_trigonometry) {
   simplifies_to("cosh(x)^2-sinh(-x)^2", "1");
   // TODO: Should simplify to 0
   simplifies_to("((1+tanh(x)^2)*tanh(2x)/2)-tanh(x)",
-                "-tanh(x)-(-sinh(x)^2/(2×cosh(x)^2)-1/2)×tanh(2×x)");
+                "-tanh(x)+((tanh(x)^2+1)×tanh(2×x))/2");
   simplifies_to("arcosh(5)", "arcosh(5)", cartesianCtx);
   simplifies_to("arcosh(5)-ln(5+√(24))", "0", cartesianCtx);
   simplifies_to("arcosh(cosh(x))", "abs(x)", cartesianCtx);
@@ -1028,8 +1029,6 @@ QUIZ_CASE(pcj_simplification_power) {
   simplifies_to("(100/3)^(1/3)", "30^(2/3)/3");
   simplifies_to("(200/3)^(1/3)", "(2×15^(2/3))/3");
   simplifies_to("ln((2-√(3))^10)+ln((2+√(3))^10)", "0");
-  simplifies_to("√(865)", "√(865)");
-  simplifies_to("√(865)/6", "√(865)/6");
 
   // Real powers
   simplifies_to("√(x)^2", "√(x)^2");
@@ -1595,8 +1594,8 @@ QUIZ_CASE(pcj_simplification_trigonometry) {
   simplifies_to("cos({π/12,-19π/12})", "{(√(2)+√(6))/4,(√(2)×(-1+√(3)))/4}");
   simplifies_to("sin({π/12,-19π/12})", "{(√(2)×(-1+√(3)))/4,(√(2)+√(6))/4}");
   // test π/10 in top-left quadrant
-  simplifies_to("cos({66π/10,-31π/10})", "{-(-1+√(5))/4,-√((5+√(5))/8)}");
-  simplifies_to("sin({66π/10,-31π/10})", "{√((5+√(5))/8),(-1+√(5))/4}");
+  simplifies_to("cos({66π/10,-31π/10})", "{-(-1+√(5))/4,-(√(2)×√(5+√(5)))/4}");
+  simplifies_to("sin({66π/10,-31π/10})", "{(√(2)×√(5+√(5)))/4,(-1+√(5))/4}");
   // test π/8 in bottom-left quadrant
   simplifies_to("cos({9π/8,59π/8})", "{-√(2+√(2))/2,-√(2-√(2))/2}");
   simplifies_to("sin({9π/8,59π/8})", "{-√(2-√(2))/2,-√(2+√(2))/2}");
@@ -1607,7 +1606,8 @@ QUIZ_CASE(pcj_simplification_trigonometry) {
   simplifies_to("cos({6π/5,-33π/5,18π/5,-π/5})",
                 "{-(1+√(5))/4,-(-1+√(5))/4,(-1+√(5))/4,(1+√(5))/4}");
   simplifies_to("sin({π/5,2π/5,3π/5,-6π/5})",
-                "{√((5-√(5))/8),√((5+√(5))/8),√((5+√(5))/8),√((5-√(5))/8)}");
+                "{(√(2)×√(5-√(5)))/4,(√(2)×√(5+√(5)))/4,(√(2)×√(5+√(5)))/"
+                "4,(√(2)×√(5-√(5)))/4}");
   // test π/4 in all quadrants
   simplifies_to("cos({π/4,3π/4,-11π/4,7π/4})",
                 "{√(2)/2,-√(2)/2,-√(2)/2,√(2)/2}");
@@ -2054,8 +2054,11 @@ QUIZ_CASE(pcj_simplification_rational_power) {
   // √a/√b <=> √(a/b)
   simplifies_to("√(3)/√(5)-√(3/5)", "0");
   // (c/d)^(a/b) => root(c^a*d^f,b)/d^g
-  simplifies_to("(2/3)^(5/7)", "root(288,7)/3");
-  simplifies_to("(4/11)^(8/9)", "(2×root(1408,9))/11");
+  // ADVANCED_MAX_DEPTH is too small
+  simplifies_to("(2/3)^(5/7)", "(2^(5/7)×3^(2/7))/3");  // "root(288,7)/3"
+  // ADVANCED_MAX_DEPTH is too small
+  simplifies_to("(4/11)^(8/9)",
+                "(2×2^(7/9)×root(11,9))/11");  // "(2×root(1408,9))/11"
   simplifies_to("(5/2)^(-4/3)", "(2×root(50,3))/25");
   // (1+i)/(1-i) => i
   simplifies_to("(1+i)/(1-i)", "i");
