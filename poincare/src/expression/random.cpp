@@ -8,8 +8,6 @@
 
 #include "approximation.h"
 #include "dimension.h"
-#include "float.h"
-#include "k_tree.h"
 
 namespace Poincare::Internal {
 
