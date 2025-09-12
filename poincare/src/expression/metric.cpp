@@ -15,6 +15,51 @@
 namespace Poincare::Internal {
 
 namespace {
+
+constexpr static float k_defaultMetric = 1.f;
+
+constexpr float GetTypeMetric(Type type) {
+  switch (type) {
+    case Type::Add:
+    case Type::Mult:
+      /* Add and Mult metrics depend on their number of children. See
+       * GetAddMultMetric. */
+      return 0.f;
+    case Type::Zero:
+    case Type::One:
+    case Type::Two:
+    case Type::MinusOne:
+      return k_defaultMetric / 3.f;
+    case Type::IntegerNegShort:
+    case Type::IntegerPosShort:
+      return k_defaultMetric / 2.f;
+    default:
+      return k_defaultMetric;
+    case Type::PowReal:
+    case Type::Random:
+    case Type::RandInt:
+      return k_defaultMetric * 2.f;
+    case Type::Var:
+    case Type::UserSymbol:
+      return k_defaultMetric * 3.f;
+    case Type::Sum:
+      return k_defaultMetric * 4.f;
+  }
+}
+
+/* Add/Mult Metric must depend on its number of children to ensure that if A is
+ * better than B*C, A*D will also be better than B*C*D. */
+constexpr float GetAddMultMetric(int numberOfChildren) {
+  static_assert(GetTypeMetric(Type::Mult) == 0.f);
+  static_assert(GetTypeMetric(Type::Add) == 0.f);
+  return k_defaultMetric * (numberOfChildren - 1);
+}
+
+constexpr float GetAddMultMetric(const Tree* e) {
+  assert(e->isAdd() || e->isMult());
+  return GetAddMultMetric(e->numberOfChildren());
+}
+
 Type ShortTypeForBigType(Type t) {
   switch (t) {
     case Type::RationalNegBig:
@@ -58,14 +103,17 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
     case Type::RationalPosBig:
     case Type::IntegerNegBig:
     case Type::IntegerPosBig:
-      return willBeBeautified
-                 ? GetMetric(ShortTypeForBigType(e->type())) * e->nodeSize()
-                 : GetMetric(e->type());
+      if (willBeBeautified) {
+        return GetTypeMetric(ShortTypeForBigType(e->type())) * e->nodeSize();
+      }
+      break;
     case Type::Mult: {
+      result += GetAddMultMetric(e);
       if (willBeBeautified) {
         // Ignore cost of multiplication in (-A)
         if (e->child(0)->isMinusOne() && e->numberOfChildren() == 2) {
-          result -= GetMetric(Type::Mult);
+          assert(result == GetAddMultMetric(e));
+          result = 0.f;
         }
         /* Trigonometry with complexes is beautified into hyperbolic
          * trigonometry (cosh, sinh, asinh and atanh)*/
@@ -78,10 +126,12 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
                 &ctx) ||
             PatternMatching::Match(
                 e, KMult(KA_s, KATanRad(KMult(KB_s, i_e)), KC_s, i_e), &ctx)) {
-          result += GetMetric(Type::MinusOne) - GetMetric(Type::ComplexI) * 2;
           if (ctx.getNumberOfTrees(KB) == 1) {
-            result -= GetMetric(Type::Mult);
+            assert(result == GetAddMultMetric(e));
+            result = 0.f;
           }
+          result +=
+              GetTypeMetric(Type::MinusOne) - GetTypeMetric(Type::ComplexI) * 2;
         }
         // Reset context
         ctx = PatternMatching::Context();
@@ -99,11 +149,12 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
           if (hasLn && ctx.getTree(KB)) {
             assert((lastInvLn == nullptr) == (ctx.getTree(KB) == nullptr));
             // Discard 1/ln(B) cost, but preserve B cost.
+            if (e->numberOfChildren() == 2) {
+              assert(result == GetAddMultMetric(e));
+              result = 0.f;
+            }
             result -= GetTrueMetric(lastInvLn, reductionTarget);
             result += GetTrueMetric(ctx.getTree(KB), reductionTarget);
-            if (e->numberOfChildren() == 2) {
-              result -= GetMetric(Type::Mult);
-            }
             break;
           }
         }
@@ -111,17 +162,24 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
       break;
     }
     case Type::Add: {
+      result += GetAddMultMetric(e);
       if (shouldExpand &&
           PatternMatching::Match(
               e, KAdd(KA_s, KMult(KB, KC), KD_s, KMult(KB, KE), KF_s), &ctx)) {
-        /* Ignore cost of developing B*(C+E) when B:
+        /* Ignore cost of having developed B*(C+E) into B*C + B*E when B:
          * - is not minus one
          * - is not the inverse of an expression
-         * - is small enough (<= k_defaultMetric) */
+         * - is small enough (<= k_defaultMetric)
+         * To do so, we ensure M(B*(C+E)) ~= M(BC+BE))
+         * This is equivalent to
+         * M(*2)+M(B)+M(+2)+M(C)+M(E) ~= M(+2)+M(*2)+M(B)+M(C)+M(*2)+M(B)+M(E)
+         * We now need to offset the added cost of M(*2) and M(B) .
+         * We can bound M(B) with k_defaultMetric (otherwise contracted form
+         * will be preferred). */
         const Tree* factor = ctx.getTree(KB);
         if (!(factor->isPow() && factor->child(1)->isMinusOne()) &&
             !factor->isMinusOne()) {
-          result -= GetMetric(Type::Mult);
+          result -= GetAddMultMetric(2);
           result -= k_defaultMetric;
         }
       }
