@@ -30,6 +30,8 @@ bool check_solutions(
             ? SymbolicComputation::KeepAllSymbols
             : SymbolicComputation::ReplaceDefinedSymbols;
     const Tree* solution = solutions->nextNode();
+    // No need to call advanced reduction on expected solutions.
+    projectionContext.m_advanceReduce = false;
     for (const char* output : outputs) {
       Tree* expectedSolution = parse(output);
       simplify(expectedSolution, projectionContext);

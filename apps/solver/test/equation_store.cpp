@@ -83,7 +83,7 @@ QUIZ_CASE(solver_linear_system) {
       {"t1=t4+t7", "t2=t4+t7-t8", "t3=t8", "t5=t7", "t6=t4"}, &globalContext);
 
   assert_solves_to_infinite_solutions(
-      {"a+2b+c+3d=0", "c-d=2"}, {"a=-4t1-2t2-2", "b=t2", "c=t1+2", "d=t1"},
+      {"a+2b+c+3d=0", "c-d=2"}, {"a=-4×t1-2×(1+t2)", "b=t2", "c=t1+2", "d=t1"},
       &globalContext);
   assert_solves_to_no_solution("2=0", &globalContext);
   assert_solves_to_no_solution("e=1", &globalContext);

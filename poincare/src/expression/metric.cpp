@@ -108,12 +108,11 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
       }
       break;
     case Type::Mult: {
-      result += GetAddMultMetric(e);
+      result = GetAddMultMetric(e);
       if (willBeBeautified) {
         // Ignore cost of multiplication in (-A)
         if (e->child(0)->isMinusOne() && e->numberOfChildren() == 2) {
-          assert(result == GetAddMultMetric(e));
-          result = 0.f;
+          result = 0;
         }
         /* Trigonometry with complexes is beautified into hyperbolic
          * trigonometry (cosh, sinh, asinh and atanh)*/
@@ -127,8 +126,7 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
             PatternMatching::Match(
                 e, KMult(KA_s, KATanRad(KMult(KB_s, i_e)), KC_s, i_e), &ctx)) {
           if (ctx.getNumberOfTrees(KB) == 1) {
-            assert(result == GetAddMultMetric(e));
-            result = 0.f;
+            result -= GetAddMultMetric(e);
           }
           result +=
               GetTypeMetric(Type::MinusOne) - GetTypeMetric(Type::ComplexI) * 2;
@@ -155,6 +153,9 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
             }
             result -= GetTrueMetric(lastInvLn, reductionTarget);
             result += GetTrueMetric(ctx.getTree(KB), reductionTarget);
+            if (e->numberOfChildren() == 2) {
+              result -= GetAddMultMetric(e);
+            }
             break;
           }
         }
@@ -162,7 +163,7 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
       break;
     }
     case Type::Add: {
-      result += GetAddMultMetric(e);
+      result = GetAddMultMetric(e);
       if (shouldExpand &&
           PatternMatching::Match(
               e, KAdd(KA_s, KMult(KB, KC), KD_s, KMult(KB, KE), KF_s), &ctx)) {
@@ -179,7 +180,7 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
         const Tree* factor = ctx.getTree(KB);
         if (!(factor->isPow() && factor->child(1)->isMinusOne()) &&
             !factor->isMinusOne()) {
-          result -= GetAddMultMetric(2);
+          result -= GetAddMultMetric(KMult(KB, KE));
           result -= k_defaultMetric;
         }
       }
@@ -219,7 +220,7 @@ float Metric::GetTrueMetric(const Tree* e, ReductionTarget reductionTarget) {
         // cos(A*i) is beautified into cosh(A)
         result -= GetMetric(Type::ComplexI);
         if (ctx.getNumberOfTrees(KA) == 1) {
-          result -= GetMetric(Type::Mult);
+          result -= GetAddMultMetric(e->child(0));
         }
       }
       childrenCoeff = 2;
@@ -288,6 +289,13 @@ float Metric::GetMetric(const Tree* e, ReductionTarget reductionTarget) {
   return metric;
 }
 
+/* Add/Mult Metric must depend on its number of children to ensure that if A is
+ * better than B*C, A*D will also be better than B*C*D. */
+float Metric::GetAddMultMetric(const Tree* e) {
+  assert(e->isAdd() || e->isMult());
+  return GetMetric(e->type()) * (e->numberOfChildren() - 1);
+}
+
 float Metric::GetMetric(Type type) {
   switch (type) {
     case Type::Zero:
@@ -304,10 +312,11 @@ float Metric::GetMetric(Type type) {
     case Type::Random:
     case Type::RandInt:
       return k_defaultMetric * 2.f;
-    case Type::Sum:
     case Type::Var:
     case Type::UserSymbol:
       return k_defaultMetric * 3.f;
+    case Type::Sum:
+      return k_defaultMetric * 4.f;
   }
 }
 
