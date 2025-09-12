@@ -136,8 +136,13 @@ void ExpressionObject::logAttributes(std::ostream& stream) const {
 template <typename T>
 SystemExpression ExpressionObject::approximateToTree(
     AngleUnit angleUnit, ComplexFormat complexFormat, Context* context) const {
+  /* TODO: This might either be a System or UserExpression. In doubt, set
+   * projectLocalVariables to true, to ensure projection of local variables on
+   * UserExpressions. It should have no effects on already projected trees. */
   return SystemExpression::Builder(Approximation::ToTree<T>(
-      tree(), Approximation::Parameters{.isRootAndCanHaveRandom = true},
+      tree(),
+      Approximation::Parameters{.isRootAndCanHaveRandom = true,
+                                .projectLocalVariables = true},
       Approximation::Context(angleUnit, complexFormat, context)));
 }
 
