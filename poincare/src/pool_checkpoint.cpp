@@ -26,6 +26,11 @@ void PoolCheckpoint::rollback() const {
    * Re-init the TreeStack.
    * The call to [freePoolFromObject] is enough to properly reset the pool.
    * TODO: maybe find a safer alternative */
+#if ASSERTIONS
+  /* NOTE: In this case, we need to deinit before init is called because an
+   * assertion checks the initialization status of the GlobalBox */
+  Internal::TreeStack::SharedTreeStack.deinit();
+#endif
   Internal::TreeStack::SharedTreeStack.init();
   Pool::sharedPool->freePoolFromObject(m_endOfPool);
 }
