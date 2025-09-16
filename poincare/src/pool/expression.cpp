@@ -435,7 +435,9 @@ Expression UserExpression::privateCloneAndReduceOrSimplify(
 #ifdef POINCARE_MAX_TREE_SIZE_FOR_SIMPLIFICATION
   if (tree()->maxDepth() > POINCARE_MAX_TREE_SIZE_FOR_SIMPLIFICATION) {
     // Prevent recursive simplification algorithms from overflowing the stack
-    *reductionFailure = true;
+    if (reductionFailure) {
+      *reductionFailure = true;
+    }
     return Builder(e);
   }
 #endif
