@@ -863,7 +863,7 @@ std::complex<T> ListToComplex(const Tree* e, const Context* ctx) {
        * elements, this is awful */
       Tree* list = ToList<T>(e->child(0), ctx);
       // TODO: Remove this clone
-      Tree* sortedList;
+      Tree* sortedList = nullptr;
       ExceptionTry {
         sortedList = list->cloneTree();
         NAry::Sort(sortedList, Order::OrderType::RealLine);
@@ -989,7 +989,7 @@ std::complex<T> MiscToComplex(const Tree* e, const Context* ctx) {
 template <typename T>
 std::complex<T> ToComplexSwitchOnlyReal(const Tree* e, const Context* ctx) {
   assert(e->numberOfChildren() <= 2);
-  T child[2];
+  T child[2] = {NAN, NAN};
   for (IndexedChild<const Tree*> childNode : e->indexedChildren()) {
     std::complex<T> app = PrivateToComplex<T>(childNode, ctx);
     if (app.imag() != 0 || std::isnan(app.real())) {
