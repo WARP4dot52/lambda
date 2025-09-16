@@ -50,6 +50,7 @@ class alignas(T) GlobalBox {
  private:
   uint8_t m_buffer[sizeof(T)];
 #if ASSERTIONS
+ public:
   bool m_isInitialized;
 #endif
 };

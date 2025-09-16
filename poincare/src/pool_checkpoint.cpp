@@ -20,18 +20,32 @@ void PoolCheckpoint::protectedDiscard() const {
 }
 
 void PoolCheckpoint::rollback() const {
-  /* NOTE: The flow here may come from a Home press inside an external app, if
-   * this is the case, value from the TreeStack and the Pool cannot be trusted
-   * as they may have been corrupted by the external app heap usage.
-   * Re-init the TreeStack.
-   * The call to [freePoolFromObject] is enough to properly reset the pool.
-   * TODO: maybe find a safer alternative */
 #if ASSERTIONS
-  /* NOTE: In this case, we need to deinit before init is called because an
-   * assertion checks the initialization status of the GlobalBox */
-  Internal::TreeStack::SharedTreeStack.deinit();
+  /* NOTE: This is a hack to bypass the assert in GlobalBox::init, indeed
+   * this function is called in 2 differents cases, only one triggering the
+   * assert:
+   * - On a standard PoolCheckpoint::Raise:
+   *     The TreeStack is already initialized and calling `init` triggers an
+   *     assert
+   * - On a CircuitBreakerCheckpoint when inside Code/External app:
+   *     The TreeStack is uninitialized and the call to `init` is safe
+   */
+  Internal::TreeStack::SharedTreeStack.m_isInitialized = false;
 #endif
+  /* NOTE: A rollback may be triggered when:
+   * - Pressing Home in an external app/code app
+   * - On a PoolCheckpoint::Raise
+   *
+   * In both cases the TreeStack must be emptied but in the former the values it
+   * contains can be corrupted by the heap usage so we re-init the TreeStack for
+   * safety. */
   Internal::TreeStack::SharedTreeStack.init();
+  /* Technically the [sharedPool] as the same corruption issue as the TreeStack
+   * but in the latter case, it must not be emptied entirely. So we cannot
+   * re-init it.
+   * The call to [freePoolFromObject] seems resilient enough to properly reset
+   * the pool even with a corrupt heap.
+   * TODO : find a safer alternative: TrackedGlobalBox for those sharedObject */
   Pool::sharedPool->freePoolFromObject(m_endOfPool);
 }
 
