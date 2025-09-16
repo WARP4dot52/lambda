@@ -256,14 +256,16 @@ void AppsContainer::switchToExternalApp(Ion::ExternalApps::App app) {
   reloadTitleBarView();
   Ion::Events::setSpinner(false);
   Ion::Display::setScreenshotCallback(nullptr);
+  /* NOTE: deinit shared objects as they can be corrupted by heap usage of
+   * external app */
+  Internal::TreeStack::SharedTreeStack.deinit();
+  Pool::sharedPool.deinit();
   ExternalAppMain appStart =
       reinterpret_cast<ExternalAppMain>(app.entryPoint());
   if (appStart) {
     appStart();
   }
-  /* NOTE: Values from the TreeStack and the Pool cannot be trusted as they may
-   * have been corrupted by the external app heap usage.
-   * Resetting the TreeStack and the Pool here is required */
+  /* NOTE: init shared objects once we exit external app */
   Internal::TreeStack::SharedTreeStack.init();
   Pool::sharedPool.init();
   switchToBuiltinApp(homeAppSnapshot());
