@@ -37,8 +37,6 @@ class Projection {
         .m_context = context};
     return projCtx;
   }
-  static bool ShouldUpdateComplexFormatWithExpressionInput(
-      const Tree* e, ProjectionContext* projectionContext);
   /* Update complexFormat if tree contains i, Re, Im, Arg or Conj. Return true
    * if updated. */
   static bool UpdateComplexFormatWithExpressionInput(

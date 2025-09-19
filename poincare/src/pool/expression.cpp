@@ -399,12 +399,6 @@ UserExpression UserExpression::cloneAndApproximate(
     context.m_dimension = Internal::Dimension::Get(a);
     Beautification::DeepBeautify(a, context);
   }
-  // If approximation is complex in Real mode, NonReal should be raised.
-  if (context.m_complexFormat == ComplexFormat::Real &&
-      Projection::ShouldUpdateComplexFormatWithExpressionInput(a, &context)) {
-    a->removeTree();
-    return UserExpression::Builder(KNonReal->cloneTree());
-  }
   return UserExpression::Builder(a);
 }
 

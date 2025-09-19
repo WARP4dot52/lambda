@@ -382,7 +382,16 @@ std::complex<T> Private::PrivateToComplex(const Tree* e, const Context* ctx) {
 #else
   std::complex<T> value = ToComplexSwitch<T>(e, ctx);
 #endif
-  // We used to flush negative zeros here and raise NonReal but it was not worth
+  if (ctx && ctx->m_complexFormat == ComplexFormat::Real && value.imag() != 0 &&
+      !(Undefined::IsUndefined(value)) && !e->isComplexI()) {
+    /* Some operations in reduction can introduce i, but when complex format is
+     * real and the factor of i approximates to 0, we don't want to return
+     * nonreal. We thus decided not to return nonreal when we approximate i.
+     * TODO: tolerate any complex encountered in approximation intermediary
+     * steps? */
+    return NonReal<T>();
+  }
+  // We used to flush negative zeros here but it was not worth
   return value;
 }
 

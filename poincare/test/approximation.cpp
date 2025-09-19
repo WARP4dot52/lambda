@@ -318,9 +318,12 @@ QUIZ_CASE(pcj_approximation_infinity) {
   approximates_to<float>("log(inf,1)", "undef", cartesianCtx);
   approximates_to<float>("log(-inf,1)", "undef", cartesianCtx);
   approximates_to<float>("log(inf,0.3)", "-∞");
+  approximates_to<float>("log(-inf,0.3)", "nonreal");
   approximates_to<float>("log(-inf,0.3)", "-∞-2.609355×i", cartesianCtx);
   approximates_to<float>("log(inf,3)", "∞");
+  approximates_to<float>("log(-inf,3)", "nonreal");
   approximates_to<float>("log(-inf,3)", "∞+2.859601×i", cartesianCtx);
+  approximates_to<float>("log(inf,-3)", "nonreal");
   approximates_to<float>("log(inf,-3)", "∞-∞×i", cartesianCtx);
   approximates_to<float>("log(0,inf)", "undef", cartesianCtx);
   approximates_to<float>("log(0,-inf)", "undef", cartesianCtx);
@@ -346,10 +349,14 @@ QUIZ_CASE(pcj_approximation_infinity) {
 
   // nonreal vs undef
   approximates_to<float>("nonreal", "nonreal");
+  approximates_to<float>("√(-1)", "nonreal");
   approximates_to<float>("√(-1)+1/0", "undef");
   // TODO_PCJ: this test returns 0 with emscripten
   // approximates_to<float>("1/(√(-1)^2+1)", "nonreal");
+  approximates_to<float>("{√(-1),1/0}", "{nonreal,undef}");
+  approximates_to<float>("(√(-1),2)", "(nonreal,2)");
   approximates_to<float>("(1/0,2)", "(undef,2)");
+  approximates_to<float>("[[√(-1),2]]", "[[nonreal,2]]");
 }
 
 QUIZ_CASE(pcj_approximation_units) {
