@@ -750,11 +750,9 @@ int SystemExpression::getPolynomialReducedCoefficients(
 UserExpression UserExpression::equivalentCartesianEquation() const {
   const Tree* t = tree();
   // Looking for KSub("y"_e, [something without "y"_e])
-  if (t->isSub() && t->child(0)->isUserSymbol() &&
-      strcmp(Symbol::GetName(t->child(0)), "y") == 0 &&
-      !(t->child(1)->hasDescendantSatisfying([](const Tree* e) {
-        return (e->isUserSymbol() && strcmp(Symbol::GetName(e), "y") == 0);
-      }))) {
+  if (t->isSub() && Symbol::IsUserSymbol(t->child(0), "y") &&
+      !(t->child(1)->hasDescendantSatisfying(
+          [](const Tree* e) { return Symbol::IsUserSymbol(e, "y"); }))) {
     return UserExpression::Builder(t->child(1));
   }
   return UserExpression();
