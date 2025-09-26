@@ -551,7 +551,7 @@ QUIZ_CASE(pcj_integer_cast) {
 
 static void assert_integer_serializes_to(const IntegerHandler integer,
                                          const char* serialization) {
-  size_t bufferSize = 500;
+  constexpr size_t bufferSize = 500;
   char buffer[bufferSize];
   integer.serialize(buffer, bufferSize);
   quiz_assert(strcmp(buffer, serialization) == 0);
