@@ -135,6 +135,17 @@ QUIZ_CASE(sequence_evaluation) {
   definitions[0] = "(-1/2)^n";
   check_sequences_defined_by(results1bis, types, definitions, conditions1,
                              conditions2);
+
+  // u(n) = 250+n v(n) = (-1)^u(n)
+  // TODO: Fix this
+  double results1ter[SequenceStore::k_maxNumberOfSequences][10] = {
+      {250.0, 251.0, 252.0, 253.0, 254.0, 255.0, 256.0, 257.0, 258.0, 259.0},
+      {NAN, NAN, NAN, -1, 1, NAN, NAN, NAN, NAN, NAN},
+      {}};
+  definitions[0] = "250+n";
+  definitions[1] = "(-1)^u(n)";
+  check_sequences_defined_by(results1ter, types, definitions, conditions1,
+                             conditions2);
   MathPreferences::SharedPreferences()->setComplexFormat(
       Preferences::ComplexFormat::Real);
 
@@ -143,6 +154,7 @@ QUIZ_CASE(sequence_evaluation) {
       {0.0, 0.0, 1.0, 3.0, 6.0, 10.0, 15.0, 21.0, 28.0, 36.0}, {}, {}};
   types[0] = Sequence::Type::SingleRecurrence;
   definitions[0] = "u(n)+n";
+  definitions[1] = nullptr;
   conditions1[0] = "0";
   check_sequences_defined_by(results2, types, definitions, conditions1,
                              conditions2);
