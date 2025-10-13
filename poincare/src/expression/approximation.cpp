@@ -473,6 +473,17 @@ std::complex<T> BasicToComplex(const Tree* e, const Context* ctx) {
       return std::exp(PrivateToComplex<T>(e->child(0), ctx));
     case Type::Log:
     case Type::Ln: {
+      const Tree* child = e->child(0);
+      if (child->isPow()) {
+        // e = ln(a^b)
+        // For a more precise approximation, we compute b*ln(a)
+        std::complex<T> a = PrivateToComplex<T>(child->child(0), ctx);
+        std::complex<T> b = PrivateToComplex<T>(child->child(1), ctx);
+        if ((a.imag() == 0) && (b.imag() == 0) && (a.real() != NAN) &&
+            (b.real() != NAN) && (a.real() >= 0)) {
+          return b * Private::ComplexLogarithm<T>(a, e->isLog());
+        }
+      }
       std::complex<T> c = PrivateToComplex<T>(e->child(0), ctx);
       return Private::ComplexLogarithm<T>(c, e->isLog());
     }
@@ -981,6 +992,17 @@ std::complex<T> MiscToComplex(const Tree* e, const Context* ctx) {
     case Type::PhysicalConstant:
       return PhysicalConstant::GetProperties(e).m_value;
     case Type::LnUser: {
+      const Tree* child = e->child(0);
+      if (child->isPow()) {
+        // e = ln(a^b)
+        // For a more precise approximation, we compute b*ln(a)
+        std::complex<T> a = PrivateToComplex<T>(child->child(0), ctx);
+        std::complex<T> b = PrivateToComplex<T>(child->child(1), ctx);
+        if ((a.imag() == 0) && (b.imag() == 0) && (a.real() != NAN) &&
+            (b.real() != NAN) && (a.real() >= 0)) {
+          return b * std::log(a);
+        }
+      }
       std::complex<T> x = PrivateToComplex<T>(e->child(0), ctx);
       if (ctx && ctx->m_complexFormat == ComplexFormat::Real &&
           (x.real() < 0 || x.imag() != 0)) {
