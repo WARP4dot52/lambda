@@ -1909,7 +1909,7 @@ QUIZ_CASE(pcj_simplification_logarithm) {
 
 QUIZ_CASE(pcj_simplification_large_integer_no_crash) {
   simplifies_to("diff(x,x,0,100000000000)", "diff(x,x,0,100000000000)");
-  simplifies_to("40000000000ln(10)", "40000000000ln(10)");
+  simplifies_to("40000000000ln(10)", "40000000000×(ln(2)+ln(5))");
 }
 
 QUIZ_CASE(pcj_simplification_large_numbers) {
