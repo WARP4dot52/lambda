@@ -175,7 +175,9 @@ QUIZ_CASE(pcj_rational_multiplication) {
 }
 
 static inline Tree* IntegerPowerNoOverflow(const Tree* e1, const Tree* e2) {
-  return Rational::IntegerPower(e1, e2).tree;
+  Rational::IntegerOperationResult result = Rational::IntegerPower(e1, e2);
+  assert(!result.hasOverflown);
+  return result.tree;
 }
 
 QUIZ_CASE(pcj_rational_integer_power) {
