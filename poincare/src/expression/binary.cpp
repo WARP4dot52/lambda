@@ -243,4 +243,54 @@ bool Binary::ReducePiecewise(Tree* piecewise) {
   return changed;
 }
 
+bool Binary::MakeLenient(Tree* e) {
+  if (!e->isComparison()) {
+    // TODO: Handle other binary operators
+    return false;
+  }
+  switch (e->type()) {
+    case Type::Inferior:
+      e->cloneNodeOverNode(KInferiorEqual);
+      break;
+    case Type::Superior:
+      e->cloneNodeOverNode(KSuperiorEqual);
+      break;
+    case Type::NotEqual:
+      e->cloneTreeOverTree(KTrue);
+      break;
+    case Type::InferiorEqual:
+    case Type::SuperiorEqual:
+    case Type::Equal:
+      break;
+    default:
+      OMG::unreachable();
+  }
+  return true;
+}
+
+bool Binary::MakeStrict(Tree* e) {
+  if (!e->isComparison()) {
+    // TODO: Handle other binary operators
+    return false;
+  }
+  switch (e->type()) {
+    case Type::Inferior:
+    case Type::Superior:
+    case Type::NotEqual:
+      break;
+    case Type::InferiorEqual:
+      e->cloneNodeOverNode(KInferior);
+      break;
+    case Type::SuperiorEqual:
+      e->cloneNodeOverNode(KSuperior);
+      break;
+    case Type::Equal:
+      e->cloneTreeOverTree(KFalse);
+      break;
+    default:
+      OMG::unreachable();
+  }
+  return true;
+}
+
 }  // namespace Poincare::Internal

@@ -3,6 +3,7 @@
 #include <poincare/src/memory/n_ary.h>
 #include <poincare/src/memory/pattern_matching.h>
 
+#include "binary.h"
 #include "dependency.h"
 #include "dimension.h"
 #include "k_tree.h"
@@ -41,6 +42,46 @@ bool Derivation::Reduce(Tree* e) {
     Derivation::Reduce(pointDiff->child(1));
     SystematicReduction::ShallowReduce(pointDiff);
     e->moveTreeOverTree(pointDiff);
+    return true;
+  }
+#endif
+#if POINCARE_PIECEWISE
+  /* Distribute derivation on branches, add undef at condition breakpoints. */
+  if (constDerivand->isPiecewise()) {
+    int numberOfChildren = constDerivand->numberOfChildren();
+    Tree* result = constDerivand->cloneNode();
+    for (IndexedChild<const Tree*> derivandChild :
+         constDerivand->indexedChildren()) {
+      if (derivandChild.index % 2 == 0) {
+        // Derive branch
+        PatternMatching::CreateSimplify(
+            KDiff(KA, KB, KC, KD),
+            {.KA = symbol, .KB = symbolValue, .KC = order, .KD = derivandChild},
+            {.KD = 1});
+      } else {
+        // Clone strict condition and leave scope.
+        Tree* strictCondition = derivandChild->cloneTree();
+        if (!Binary::MakeStrict(strictCondition)) {
+          SharedTreeStack->flushFromBlock(result);
+          return false;
+        }
+        Variables::LeaveScopeWithReplacement(strictCondition, symbolValue, true,
+                                             false);
+        numberOfChildren += 2;
+        KUndef->cloneTree();
+        // Clone nonStrict condition and leave scope.
+        strictCondition = derivandChild->cloneTree();
+        if (!Binary::MakeLenient(strictCondition)) {
+          SharedTreeStack->flushFromBlock(result);
+          return false;
+        }
+        Variables::LeaveScopeWithReplacement(strictCondition, symbolValue, true,
+                                             false);
+      }
+    }
+    NAry::SetNumberOfChildren(result, numberOfChildren);
+    SystematicReduction::ShallowReduce(result);
+    e->moveTreeOverTree(result);
     return true;
   }
 #endif

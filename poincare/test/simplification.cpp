@@ -1985,6 +1985,15 @@ QUIZ_CASE(pcj_simplification_piecewise) {
   simplifies_to("piecewise(3,1>0,2,undef)", "undef");
   simplifies_to("piecewise(-1,undef,i)", "undef");
   simplifies_to("piecewise(4^2,undef,6,4>2)", "undef");
+  simplifies_to("diff(piecewise(1,x>1,2,x>=2,3,x<3,4,x<=4,7),x,x)",
+                "piecewise(0,x>1,undef,x>=1,0,x>2,undef,x>=2,0,x<3,undef,x<=3,"
+                "0,x<4,undef,x<=4,0)");
+  simplifies_to("diff(piecewise(5,x=5,6,x!=6,7),x,x)",
+                "piecewise(undef,x=5,0,x!=6,undef)");
+  simplifies_to("diff(piecewise(0,x>3,x,not x=1,-x),x,x)",
+                "diff(piecewise(0,x>3,x,not x=1,-x),x,x)");
+  simplifies_to("diff(piecewise(-x,2>x>=3,x),x,x)",
+                "diff(piecewise(-x,2>x and x≥3,x),x,x)");
 }
 
 QUIZ_CASE(pcj_simplification_distributions) {
