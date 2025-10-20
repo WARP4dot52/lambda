@@ -46,7 +46,24 @@ bool Derivation::Reduce(Tree* e) {
   }
 #endif
 #if POINCARE_PIECEWISE
-  /* Distribute derivation on branches, add undef at condition breakpoints. */
+  /* Distribute derivation on branches, add undef at condition breakpoints.
+   * For example:
+   * piecewise(f1(x),  x>1,
+   *           f2(x),  x≤2,
+   *           f3(x),  x=3,
+   *           f4(x),  x≠4,
+   *           f5(x))
+   * Is derived to
+   * piecewise(f'1(x), x>1,
+   *           undef,  x≥1,
+   *           f'2(x), x<2,
+   *           undef,  x≤2,
+   *           f'3(x), false,
+   *           undef,  x=3,
+   *           f'4(x), x≠4,
+   *           undef,  true,
+   *           f'5(x))
+   */
   if (constDerivand->isPiecewise()) {
     int numberOfChildren = constDerivand->numberOfChildren();
     Tree* result = constDerivand->cloneNode();

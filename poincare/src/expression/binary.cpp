@@ -280,12 +280,12 @@ bool Binary::MakeLenient(Tree* e) {
       result = MakeLenient(e->child(0)) && MakeLenient(e->child(1));
       break;
     case Type::LogicalXor:
-      // TODO: Expand the operator and apply MakeLenient.
+      // TODO: Not handled for now. It should be expanded into a!b+!ab first
       result = false;
       break;
     case Type::LogicalNor:
     case Type::LogicalNand:
-      // Nor and Nand should have been reduced out.
+      // Nor and Nand should have been projected.
       // result = MakeStrict(e->child(0)) && MakeStrict(e->child(1));
     default:
       OMG::unreachable();
@@ -334,12 +334,12 @@ bool Binary::MakeStrict(Tree* e) {
       result = MakeStrict(e->child(0)) && MakeStrict(e->child(1));
       break;
     case Type::LogicalXor:
-      // TODO: Expand the operator and apply MakeStrict.
+      // TODO: Not handled for now. It should be expanded into a!b+!ab first
       result = false;
       break;
     case Type::LogicalNor:
     case Type::LogicalNand:
-      // Nor and Nand should have been reduced out.
+      // Nor and Nand should have been projected.
       // result = MakeLenient(e->child(0)) && MakeLenient(e->child(1));
     default:
       OMG::unreachable();

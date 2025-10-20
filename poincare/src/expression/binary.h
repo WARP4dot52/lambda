@@ -27,13 +27,15 @@ class Binary {
 
   static bool ReducePiecewise(Tree* e);
 
-  /* Make reduced operators lenient. Return false if unhandled. Examples :
+  /* Make reduced piecewise condition [e] lenient.
+   * Return false if unhandled. Examples :
    * a > b  is turned into a >= b
    * a <= b is turned into a <= b
    * a != b is turned into True
    * xor(a > b, a >= c) returns false. */
   static bool MakeLenient(Tree* e);
-  /* Make reduced operators strict. Return false if unhandled. Examples :
+  /* Make reduced piecewise condition [e] strict.
+   * Return false if unhandled. Examples :
    * a >= b is turned into a > b
    * a < b  is turned into a < b
    * a = b  is turned into False
