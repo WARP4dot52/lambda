@@ -10,11 +10,11 @@ using namespace Poincare;
 
 template <typename T>
 void assert_expression_approximates_to_scalar(
-    const char *expression, T approximation,
+    const char* expression, T approximation,
     Preferences::AngleUnit angleUnit = Degree,
     Preferences::ComplexFormat complexFormat = Cartesian) {
   Shared::GlobalContext globalContext;
-  Internal::Tree *e = parse_expression(expression, &globalContext);
+  Internal::Tree* e = parse_expression(expression, &globalContext);
   T result = Internal::Approximation::To<T>(
       e,
       Internal::Approximation::Parameters{.isRootAndCanHaveRandom = true,
@@ -85,7 +85,7 @@ QUIZ_CASE(poincare_approximation_rational) {
 }
 
 template <typename T>
-void assert_float_approximates_to(Expression f, const char *result) {
+void assert_float_approximates_to(Expression f, const char* result) {
 #if 0  // TODO_PCJ
   Shared::GlobalContext globalContext;
   int numberOfDigits = PrintFloat::SignificantDecimalDigits<T>();
@@ -471,7 +471,7 @@ QUIZ_CASE(poincare_approximation_logarithm) {
 }
 
 template <typename T>
-void assert_expression_approximation_is_bounded(const char *expression,
+void assert_expression_approximation_is_bounded(const char* expression,
                                                 T lowBound, T upBound,
                                                 bool upBoundIncluded = false) {
   // TODO_PCJ
@@ -869,9 +869,9 @@ QUIZ_CASE(poincare_approximation_function) {
 }
 
 template <typename T>
-void assert_no_duplicates_in_list(const char *expression) {
+void assert_no_duplicates_in_list(const char* expression) {
   Shared::GlobalContext globalContext;
-  Internal::Tree *e = parse_expression(expression, &globalContext);
+  Internal::Tree* e = parse_expression(expression, &globalContext);
   // Sort list
   e->cloneNodeAtNode(Poincare::Internal::KListSort);
   e->moveTreeOverTree(Internal::Approximation::ToTree<T>(
@@ -2212,7 +2212,7 @@ QUIZ_CASE(poincare_approximation_mixed_fraction) {
 
 template <typename T>
 void assert_expression_approximates_with_value_for_symbol(
-    const char *expression, T approximation, const char *symbol, T symbolValue,
+    const char* expression, T approximation, const char* symbol, T symbolValue,
     Preferences::AngleUnit angleUnit = Degree,
     Preferences::ComplexFormat complexFormat = Cartesian) {
   Shared::GlobalContext globalContext;

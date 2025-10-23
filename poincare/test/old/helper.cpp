@@ -17,9 +17,9 @@
 using namespace Poincare;
 using namespace Poincare::Internal;
 
-const char *MaxIntegerString() {
+const char* MaxIntegerString() {
   // (2^32)^k_maxNumberOfDigits-1
-  static const char *s =
+  static const char* s =
       "179769313486231590772930519078902473361797697894230657273430081157732675"
       "805500963132708477322407536021120113879871393357658789768814416622492847"
       "430639474124377767893424865485276302219601246094119453082952085005768838"
@@ -28,9 +28,9 @@ const char *MaxIntegerString() {
   return s;
 }
 
-const char *OverflowedIntegerString() {
+const char* OverflowedIntegerString() {
   // (2^32)^k_maxNumberOfDigits
-  static const char *s =
+  static const char* s =
       "179769313486231590772930519078902473361797697894230657273430081157732675"
       "805500963132708477322407536021120113879871393357658789768814416622492847"
       "430639474124377767893424865485276302219601246094119453082952085005768838"
@@ -39,9 +39,9 @@ const char *OverflowedIntegerString() {
   return s;
 }
 
-const char *BigOverflowedIntegerString() {
+const char* BigOverflowedIntegerString() {
   // OverflowedIntegerString() with a 2 on first digit
-  static const char *s =
+  static const char* s =
       "279769313486231590772930519078902473361797697894230657273430081157732675"
       "805500963132708477322407536021120113879871393357658789768814416622492847"
       "430639474124377767893424865485276302219601246094119453082952085005768838"
@@ -50,15 +50,15 @@ const char *BigOverflowedIntegerString() {
   return s;
 }
 
-const char *MaxParsedIntegerString() {
+const char* MaxParsedIntegerString() {
   // 10^k_maxNumberOfParsedDigitsBase10 - 1
-  static const char *s = "999999999999999999999999999999";
+  static const char* s = "999999999999999999999999999999";
   return s;
 }
 
-const char *ApproximatedParsedIntegerString() {
+const char* ApproximatedParsedIntegerString() {
   // 10^k_maxNumberOfParsedDigitsBase10
-  static const char *s = "1000000000000000000000000000000";
+  static const char* s = "1000000000000000000000000000000";
   return s;
 }
 
@@ -72,15 +72,15 @@ void quiz_assert_log_if_failure(bool test, PoolHandle tree) {
   quiz_assert(test);
 }
 
-void build_failure_infos(char *returnedInformationsBuffer, size_t bufferSize,
-                         const char *expression, const char *result,
-                         const char *expectedResult) {
+void build_failure_infos(char* returnedInformationsBuffer, size_t bufferSize,
+                         const char* expression, const char* result,
+                         const char* expectedResult) {
   Print::UnsafeCustomPrintf(returnedInformationsBuffer, bufferSize,
                             "FAILURE: %s processed to %s instead of %s",
                             expression, result, expectedResult);
 }
 
-void copy_without_system_chars(char *buffer, const char *input) {
+void copy_without_system_chars(char* buffer, const char* input) {
   while (char c = *input++) {
     if (c == 0x11) continue;
     if (c == 0x14) continue;
@@ -91,7 +91,7 @@ void copy_without_system_chars(char *buffer, const char *input) {
 }
 
 void assert_parsed_expression_process_to(
-    const char *expression, const char *oldResult, Context *ctx,
+    const char* expression, const char* oldResult, Context* ctx,
     ReductionTarget target, Preferences::ComplexFormat complexFormat,
     Preferences::AngleUnit angleUnit, Preferences::UnitFormat unitFormat,
     SymbolicComputation symbolicComputation, ProcessExpression process,
@@ -101,15 +101,15 @@ void assert_parsed_expression_process_to(
   char result[bufferSize];
   copy_without_system_chars(result, oldResult);
   assert(SharedTreeStack->numberOfTrees() == 0);
-  Tree *e = parse_expression(expression, ctx);
+  Tree* e = parse_expression(expression, ctx);
   Internal::ProjectionContext projCtx = {.m_complexFormat = complexFormat,
                                          .m_angleUnit = angleUnit,
                                          .m_reductionTarget = target,
                                          .m_unitFormat = unitFormat,
                                          .m_symbolic = symbolicComputation,
                                          .m_context = ctx};
-  Tree *m = process(e, projCtx);
-  Tree *l = Internal::Layouter::LayoutExpression(m, true, false,
+  Tree* m = process(e, projCtx);
+  Tree* l = Internal::Layouter::LayoutExpression(m, true, false,
                                                  numberOfSignificantDigits);
   Internal::LayoutSerializer::Serialize(l, buffer);
   copy_without_system_chars(buffer, buffer);
@@ -127,33 +127,33 @@ void assert_parsed_expression_process_to(
 #endif
 }
 
-Internal::Tree *parse_expression(const char *expression, Context *context,
+Internal::Tree* parse_expression(const char* expression, Context* context,
                                  bool parseForAssignment) {
-  Tree *inputLayout = RackFromText(expression);
+  Tree* inputLayout = RackFromText(expression);
   RackParser parser(inputLayout, context, true,
                     parseForAssignment
                         ? Internal::ParsingContext::ParsingMethod::Assignment
                         : Internal::ParsingContext::ParsingMethod::Classic);
   bool success = parser.parse() != nullptr;
   inputLayout->removeTree();
-  Tree *result = success ? inputLayout : nullptr;
+  Tree* result = success ? inputLayout : nullptr;
   quiz_assert_print_if_failure(result != nullptr, expression);
   return result;
 }
 
-void assert_parsed_expression_is(const char *expression,
-                                 const Poincare::Internal::Tree *expected,
+void assert_parsed_expression_is(const char* expression,
+                                 const Poincare::Internal::Tree* expected,
                                  bool parseForAssignment) {
   Shared::GlobalContext context;
   assert_parsed_expression_is(expression, expected, &context,
                               parseForAssignment);
 }
 
-void assert_parsed_expression_is(const char *expression,
-                                 const Poincare::Internal::Tree *expected,
-                                 Shared::GlobalContext *context,
+void assert_parsed_expression_is(const char* expression,
+                                 const Poincare::Internal::Tree* expected,
+                                 Shared::GlobalContext* context,
                                  bool parseForAssignment) {
-  Tree *parsed = parse_expression(expression, context, parseForAssignment);
+  Tree* parsed = parse_expression(expression, context, parseForAssignment);
   bool test = parsed && parsed->treeIsIdenticalTo(expected);
   if (parsed) {
     parsed->removeTree();
@@ -166,17 +166,17 @@ void assert_parsed_expression_is(const char *expression,
 #endif
 }
 
-void assert_parse_to_same_expression(const char *expression1,
-                                     const char *expression2,
-                                     Shared::GlobalContext *globalContext) {
-  Tree *e1 = parse_expression(expression1, globalContext);
-  Tree *e2 = parse_expression(expression2, globalContext);
+void assert_parse_to_same_expression(const char* expression1,
+                                     const char* expression2,
+                                     Shared::GlobalContext* globalContext) {
+  Tree* e1 = parse_expression(expression1, globalContext);
+  Tree* e2 = parse_expression(expression2, globalContext);
   quiz_assert(e1);
   quiz_assert(e2);
   quiz_assert(e1->treeIsIdenticalTo(e2));
 }
 
-void assert_reduce_and_store(const char *expression,
+void assert_reduce_and_store(const char* expression,
                              Preferences::AngleUnit angleUnit,
                              Preferences::UnitFormat unitFormat,
                              Preferences::ComplexFormat complexFormat,
@@ -193,7 +193,7 @@ void assert_reduce_and_store(const char *expression,
 }
 
 void assert_parsed_expression_simplify_to(
-    const char *expression, const char *simplifiedExpression,
+    const char* expression, const char* simplifiedExpression,
     ReductionTarget target, Preferences::AngleUnit angleUnit,
     Preferences::UnitFormat unitFormat,
     Preferences::ComplexFormat complexFormat,
@@ -219,8 +219,8 @@ void assert_parsed_expression_simplify_to(
 }
 
 template <typename T>
-void assert_expression_approximates_to(const char *expression,
-                                       const char *approximation,
+void assert_expression_approximates_to(const char* expression,
+                                       const char* approximation,
                                        Preferences::AngleUnit angleUnit,
                                        Preferences::UnitFormat unitFormat,
                                        Preferences::ComplexFormat complexFormat,
@@ -229,7 +229,7 @@ void assert_expression_approximates_to(const char *expression,
   assert_parsed_expression_process_to(
       expression, approximation, &globalContext, User, complexFormat, angleUnit,
       unitFormat, ReplaceAllSymbols,
-      [](Tree *e, Internal::ProjectionContext &projCtx) -> Tree * {
+      [](Tree* e, Internal::ProjectionContext& projCtx) -> Tree* {
         /* tree is projected beforehand so we can prepare it for
          * approximation, and have better results on integrals for example. */
         Simplification::ToSystem(e, &projCtx);
@@ -248,14 +248,14 @@ void assert_expression_approximates_to(const char *expression,
 }
 
 void assert_expression_approximates_keeping_symbols_to(
-    const char *expression, const char *simplifiedExpression,
+    const char* expression, const char* simplifiedExpression,
     Preferences::AngleUnit angleUnit, Preferences::UnitFormat unitFormat,
     Preferences::ComplexFormat complexFormat, int numberOfSignificantDigits) {
   Shared::GlobalContext globalContext;
   assert_parsed_expression_process_to(
       expression, simplifiedExpression, &globalContext, SystemForApproximation,
       complexFormat, angleUnit, unitFormat, ReplaceDefinedSymbols,
-      [](Tree *e, Internal::ProjectionContext &projCtx) -> Tree * {
+      [](Tree* e, Internal::ProjectionContext& projCtx) -> Tree* {
 #if 0
         Tree *simplifiedExpression;
         e.cloneAndSimplifyAndApproximate(&simplifiedExpression, nullptr,
@@ -269,13 +269,13 @@ void assert_expression_approximates_keeping_symbols_to(
 
 template <typename T>
 void assert_expression_simplifies_approximates_to(
-    const char *expression, const char *approximation, Context *context,
+    const char* expression, const char* approximation, Context* context,
     Preferences::AngleUnit angleUnit, Preferences::UnitFormat unitFormat,
     Preferences::ComplexFormat complexFormat, int numberOfSignificantDigits) {
   assert_parsed_expression_process_to(
       expression, approximation, context, SystemForApproximation, complexFormat,
       angleUnit, unitFormat, ReplaceAllSymbols,
-      [](Tree *e, Internal::ProjectionContext &projCtx) -> Tree * {
+      [](Tree* e, Internal::ProjectionContext& projCtx) -> Tree* {
         simplify(e, projCtx, false);
         TreeRef result = Internal::Approximation::ToTree<T>(
             e,
@@ -296,14 +296,14 @@ void assert_expression_simplifies_approximates_to(
       numberOfSignificantDigits);
 }
 
-void assert_expression_serializes_to(const Tree *expression,
-                                     const char *serialization,
+void assert_expression_serializes_to(const Tree* expression,
+                                     const char* serialization,
                                      Preferences::PrintFloatMode mode,
                                      int numberOfSignificantDigits,
                                      OMG::Base base) {
   constexpr int bufferSize = 500;
   char buffer[bufferSize];
-  Tree *layout = Internal::Layouter::LayoutExpression(
+  Tree* layout = Internal::Layouter::LayoutExpression(
       expression->cloneTree(), true, false, numberOfSignificantDigits, mode,
       base);
   LayoutSerializer::Serialize(layout, buffer);
@@ -321,11 +321,11 @@ void assert_expression_serializes_to(const Tree *expression,
 }
 
 void assert_expression_serializes_and_parses_to(
-    const Poincare::Internal::Tree *expression,
-    const Poincare::Internal::Tree *result) {
+    const Poincare::Internal::Tree* expression,
+    const Poincare::Internal::Tree* result) {
   constexpr int bufferSize = 500;
   char buffer[bufferSize];
-  Tree *layout =
+  Tree* layout =
       Internal::Layouter::LayoutExpression(expression->cloneTree(), true);
   Internal::LayoutSerializer::Serialize(layout, buffer);
   layout->removeTree();
@@ -333,16 +333,16 @@ void assert_expression_serializes_and_parses_to(
 }
 
 void assert_expression_serializes_and_parses_to_itself(
-    const Poincare::Internal::Tree *expression) {
+    const Poincare::Internal::Tree* expression) {
   return assert_expression_serializes_and_parses_to(expression, expression);
 }
 
 void assert_expression_parses_and_serializes_to(
-    const char *expression, const char *result,
-    Shared::GlobalContext *globalContext, Preferences::PrintFloatMode mode,
+    const char* expression, const char* result,
+    Shared::GlobalContext* globalContext, Preferences::PrintFloatMode mode,
     int numberOfSignificantDigits, OMG::Base base) {
-  Tree *e = parse_expression(expression, globalContext);
-  Tree *l = Internal::Layouter::LayoutExpression(
+  Tree* e = parse_expression(expression, globalContext);
+  Tree* l = Internal::Layouter::LayoutExpression(
       e, true, false, numberOfSignificantDigits, mode, base);
   constexpr int bufferSize = 500;
   char buffer[bufferSize];
@@ -361,13 +361,13 @@ void assert_expression_parses_and_serializes_to(
 }
 
 void assert_expression_parses_and_serializes_to_itself(
-    const char *expression, Shared::GlobalContext *globalContext) {
+    const char* expression, Shared::GlobalContext* globalContext) {
   return assert_expression_parses_and_serializes_to(expression, expression,
                                                     globalContext);
 }
 
-void assert_layout_serializes_to(const Tree *layout,
-                                 const char *serialization) {
+void assert_layout_serializes_to(const Tree* layout,
+                                 const char* serialization) {
   assert(layout);
   assert(serialization);
   constexpr int bufferSize = 255;
@@ -393,14 +393,14 @@ void assert_layout_serializes_to(const Tree *layout,
 }
 
 template void assert_expression_approximates_to<float>(
-    char const *, char const *, Preferences::AngleUnit, Preferences::UnitFormat,
+    char const*, char const*, Preferences::AngleUnit, Preferences::UnitFormat,
     Preferences::ComplexFormat, int);
 template void assert_expression_approximates_to<double>(
-    char const *, char const *, Preferences::AngleUnit, Preferences::UnitFormat,
+    char const*, char const*, Preferences::AngleUnit, Preferences::UnitFormat,
     Preferences::ComplexFormat, int);
 template void assert_expression_simplifies_approximates_to<float>(
-    char const *, char const *, Context *context, Preferences::AngleUnit,
+    char const*, char const*, Context* context, Preferences::AngleUnit,
     Preferences::UnitFormat, Preferences::ComplexFormat, int);
 template void assert_expression_simplifies_approximates_to<double>(
-    char const *, char const *, Context *context, Preferences::AngleUnit,
+    char const*, char const*, Context* context, Preferences::AngleUnit,
     Preferences::UnitFormat, Preferences::ComplexFormat, int);

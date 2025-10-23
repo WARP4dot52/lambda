@@ -5,9 +5,9 @@
 
 using namespace Poincare;
 
-static inline void assert_has_rank(const char *exp, int rank) {
+static inline void assert_has_rank(const char* exp, int rank) {
   Shared::GlobalContext context;
-  Internal::Tree *e = parse_expression(exp, &context);
+  Internal::Tree* e = parse_expression(exp, &context);
   quiz_assert(e->isMatrix());
   quiz_assert(rank == Internal::Matrix::Rank(e));
   e->removeTree();

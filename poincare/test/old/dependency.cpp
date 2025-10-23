@@ -73,10 +73,10 @@ QUIZ_CASE(poincare_dependency_parametered_expression) {
 }
 
 QUIZ_CASE(poincare_dependency_sequence) {
-  const char *emptyString = "";
+  const char* emptyString = "";
   Ion::Storage::FileSystem::sharedFileSystem
       ->createRecordWithFullNameAndDataChunks(
-          "u.seq", reinterpret_cast<const void **>(&emptyString), 0, 0);
+          "u.seq", reinterpret_cast<const void**>(&emptyString), 0, 0);
   assert_reduce_and_store("3→f(x)");
   // Sequence are kept in dependency
   assert_parsed_expression_simplify_to("f(u(n))", "dep(3,{u(n)})");
