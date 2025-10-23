@@ -4,7 +4,7 @@
 #include <apps/constant.h>
 #include <apps/math_preferences.h>
 #include <apps/shared/expiring_pointer.h>
-#include <poincare/old/pool_variable_context.h>
+#include <poincare/pool_variable_context.h>
 #include <stddef.h>
 
 #include "calculation.h"

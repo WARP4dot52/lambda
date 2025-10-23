@@ -21,18 +21,11 @@ _sources_poincare_checkpoint := $(addprefix src/, \
 )
 
 _sources_poincare_storage := $(addprefix src/, \
-  old/preferences_in_storage.cpp:-nostorage \
+  preferences_in_storage.cpp:-nostorage \
   preferences_no_storage.cpp:+nostorage \
 )
 
 _sources_poincare_extended := $(addprefix src/, \
-$(addprefix old/, \
-  context.cpp \
-  empty_context.cpp \
-  float_list.cpp:-nopool \
-  pool_variable_context.cpp:-nopool \
-  tree_variable_context.cpp \
-) \
 $(addprefix expression/, \
   advanced_operation.cpp \
   advanced_reduction.cpp \
@@ -207,9 +200,14 @@ $(addprefix statistics/, \
 ) \
   additional_results_helper.cpp:-nopool \
   comparison_operator.cpp \
+  context.cpp \
+  empty_context.cpp \
+  float_list.cpp:-nopool \
+  pool_variable_context.cpp:-nopool \
   print.cpp \
   random.cpp \
   range.cpp \
+  tree_variable_context.cpp \
 )
 
 _sources_poincare_test := $(addprefix test/, \

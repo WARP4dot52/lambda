@@ -5,8 +5,8 @@
 #include <omg/bit_helper.h>
 #include <omg/code_guard.h>
 #include <omg/global_box.h>
+#include <poincare/context.h>
 #include <poincare/exam_mode.h>
-#include <poincare/old/context.h>
 #include <poincare/src/expression/context.h>
 #include <stdint.h>
 

@@ -2,7 +2,7 @@
 #define SOLVER_SYSTEM_OF_EQUATIONS_H
 
 #include <apps/shared/interactive_curve_view_range.h>
-#include <poincare/old/context_with_parent.h>
+#include <poincare/context_with_parent.h>
 #include <poincare/range.h>
 #include <poincare/src/expression/equation_solver.h>
 

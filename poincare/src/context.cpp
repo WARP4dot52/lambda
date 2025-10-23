@@ -1,4 +1,4 @@
-#include <poincare/old/context.h>
+#include <poincare/context.h>
 
 namespace Poincare {
 

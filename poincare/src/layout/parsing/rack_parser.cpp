@@ -3,8 +3,7 @@
 #include <omg/code_point.h>
 #include <omg/unicode_helper.h>
 #include <omg/utf8_decoder.h>
-#include <poincare/old/empty_context.h>
-#include <poincare/old/tree_variable_context.h>
+#include <poincare/empty_context.h>
 #include <poincare/preferences.h>
 #include <poincare/src/expression/approximation.h>
 #include <poincare/src/expression/binary.h>
@@ -23,6 +22,7 @@
 #include <poincare/src/memory/n_ary.h>
 #include <poincare/src/memory/pattern_matching.h>
 #include <poincare/src/memory/tree_stack_checkpoint.h>
+#include <poincare/tree_variable_context.h>
 #include <stdlib.h>
 
 #include <algorithm>

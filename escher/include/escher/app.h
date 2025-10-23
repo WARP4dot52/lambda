@@ -10,7 +10,7 @@
 #include <escher/view_controller.h>
 #include <escher/warning_controller.h>
 #include <ion/storage/file_system.h>
-#include <poincare/old/context.h>
+#include <poincare/context.h>
 
 /* An app is fed events and outputs drawing calls.
  *

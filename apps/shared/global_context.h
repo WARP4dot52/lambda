@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <ion/storage/file_system.h>
 #include <omg/global_box.h>
-#include <poincare/old/context.h>
+#include <poincare/context.h>
 
 #include <array>
 

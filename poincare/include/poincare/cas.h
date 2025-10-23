@@ -1,8 +1,8 @@
 #ifndef POINCARE_CAS_H
 #define POINCARE_CAS_H
 
+#include <poincare/context.h>
 #include <poincare/expression.h>
-#include <poincare/old/context.h>
 
 namespace Poincare {
 

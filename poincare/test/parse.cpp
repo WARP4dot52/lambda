@@ -1,6 +1,6 @@
 #include <apps/shared/global_context.h>
 #include <omg/code_point.h>
-#include <poincare/old/empty_context.h>
+#include <poincare/empty_context.h>
 #include <poincare/src/expression/k_tree.h>
 #include <poincare/src/expression/symbol.h>
 #include <poincare/src/expression/units/unit.h>

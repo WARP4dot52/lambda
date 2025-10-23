@@ -1,7 +1,7 @@
 #include <apps/shared/global_context.h>
 #include <ion/storage/file_system.h>
 #include <poincare/function_properties/conic.h>
-#include <poincare/old/pool_variable_context.h>
+#include <poincare/pool_variable_context.h>
 #include <poincare/src/expression/simplification.h>
 
 #include "helper.h"

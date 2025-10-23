@@ -5,9 +5,9 @@
 #include <apps/shared/poincare_helpers.h>
 #include <omg/print.h>
 #include <poincare/cas.h>
+#include <poincare/empty_context.h>
 #include <poincare/helpers/expression_equal_sign.h>
-#include <poincare/old/empty_context.h>
-#include <poincare/old/pool_variable_context.h>
+#include <poincare/pool_variable_context.h>
 #include <poincare/src/expression/approximation.h>
 #include <poincare/src/expression/equation_solver.h>
 #include <poincare/src/expression/float_helper.h>

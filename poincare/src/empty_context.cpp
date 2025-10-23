@@ -1,5 +1,5 @@
-#include <poincare/old/context_with_parent.h>
-#include <poincare/old/empty_context.h>
+#include <poincare/context_with_parent.h>
+#include <poincare/empty_context.h>
 
 namespace Poincare {
 
