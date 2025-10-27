@@ -782,4 +782,7 @@ Tree* EquationSolver::getNextParameterSymbol(size_t* parameterIndex,
   OMG::unreachable();
 }
 
+template void VariableArray<
+    EquationSolver::k_maxNumberOfExactSolutions>::fillWithList(const Tree*);
+
 }  // namespace Poincare::Internal
