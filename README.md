@@ -1,4 +1,4 @@
-###Lambda (a dark mode for Epsilon)
+### Lambda (a dark mode for Epsilon)
 
 
 for legal reason i cant share binaries but you can compile it yourself
