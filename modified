@@ -1,0 +1,7 @@
+#used for internal tracking purpose
+
+apps/i18n.py
+
+#colors
+escher/include/escher/palette.h
+kandinsky/include/kandinsky/color.h

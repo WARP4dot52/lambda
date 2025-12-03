@@ -165,37 +165,6 @@ def line_over_length_limit(definition, type):
             return definition_line
     return None
 
-
-def check_redundancy(messages, data, locales):
-    redundant_names = set()
-    for name in messages:
-        redundancy = True
-        for i in range(1, len(locales)):
-            redundancy = (
-                redundancy and data[locales[i]][name] == data[locales[i - 1]][name]
-            )
-        if redundancy:
-            redundant_names.add(name)
-    if len(redundant_names) > 0:
-        sys.stderr.write(
-            "Some localized messages are redundant and can be made universal :\n\t"
-            + "\n\t".join(sorted(redundant_names))
-            + "\n"
-        )
-        sys.exit(-1)
-
-
-def check_duplicates(messages, data, locales):
-    all_names = set()
-    for name in messages:
-        concatenated = ""
-        for i in range(0, len(locales)):
-            concatenated = str(concatenated) + "§" + str(data[locales[i]][name])
-        if concatenated in all_names:
-            sys.stderr.write('Warning: Redundant localized message "' + name + '"\n')
-        all_names.add(concatenated)
-
-
 def discard_messages_in_file(filePath, messages):
     with open(filePath, "r", encoding="utf-8") as f:
         file = f.read()
@@ -312,9 +281,6 @@ def parse_files(files):
                     )
                     sys.exit(-1)
                 data[locale][name] = definition
-    if len(args.locales) >= default_number_of_locales:
-        check_redundancy(messages, data, args.locales)
-        check_duplicates(messages, data, args.locales)
     return {
         "messages": sorted(messages),
         "universal_messages": sorted(universal_messages),
